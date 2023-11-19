@@ -42,7 +42,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const options = {
-                projection: { image: 1, job_title: 1, max_price: 1, min_price: 1 }
+                projection: { image: 1, job_title: 1, max_price: 1, min_price: 1, email: 1 }
             }
             const result = await categoryCollection.findOne(query, options);
             res.send(result)
@@ -84,7 +84,7 @@ async function run() {
             res.send(result)
         })
 
-        // bid
+        // my bid page and bid request page
         app.get('/bid', async (req, res) => {
             console.log(req.query.email);
             let query = {};
@@ -94,7 +94,15 @@ async function run() {
             const result = await bidCollection.find(query).toArray();
             res.send(result);
         })
+        
 
+        // bid request
+        app.get('/bid/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await bidCollection.findOne(query)
+            res.send(result)
+        })
 
 
         app.post('/bid', async (req, res) => {
@@ -103,6 +111,24 @@ async function run() {
             const result = await bidCollection.insertOne(bid);
             res.send(result)
         })
+
+
+        app.patch('/bid/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateStatus = req.body;
+            console.log(updateStatus);
+            const updateDoc = {
+                $set: {
+                    status: updateStatus.status
+                }
+            }
+            const result = await bidCollection.updateOne(filter, updateDoc);
+            res.send(result)
+        })
+
+
+
 
 
 
